@@ -1,0 +1,54 @@
+name: Lume
+options:
+  bundleIdPrefix: app.lume.prototype
+  deploymentTarget:
+    iOS: '18.0'
+settings:
+  base:
+    SWIFT_VERSION: '5.9'
+    CURRENT_PROJECT_VERSION: 1
+    MARKETING_VERSION: '0.1.0'
+    TARGETED_DEVICE_FAMILY: '1,2'
+targets:
+  Lume:
+    type: application
+    platform: iOS
+    sources:
+      - LumeApp.swift
+      - LumeAttributes.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.lume.prototype
+    info:
+      path: Generated/App-Info.plist
+      properties:
+        CFBundleDisplayName: Lume Teste
+        NSSupportsLiveActivities: true
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+    dependencies:
+      - target: LumeActivity
+        embed: true
+  LumeActivity:
+    type: app-extension
+    platform: iOS
+    sources:
+      - LumeActivity.swift
+      - LumeAttributes.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.lume.prototype.activity
+        SKIP_INSTALL: YES
+        APPLICATION_EXTENSION_API_ONLY: YES
+    info:
+      path: Generated/Widget-Info.plist
+      properties:
+        CFBundleDisplayName: Lume Activity
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+schemes:
+  Lume:
+    build:
+      targets:
+        Lume: all
