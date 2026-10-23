@@ -1,0 +1,36 @@
+name: Compilar Lume iOS
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Conferir Xcode
+        run: xcodebuild -version
+      - name: Preparar XcodeGen
+        run: brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
+      - name: Gerar projeto
+        run: xcodegen generate --spec project.yml
+      - name: Compilar app e extensão sem assinatura
+        run: >-
+          xcodebuild -project Lume.xcodeproj -scheme Lume
+          -configuration Release -sdk iphoneos -destination 'generic/platform=iOS'
+          -derivedDataPath build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build
+      - name: Empacotar IPA de teste sem assinatura
+        run: |
+          mkdir -p package/Payload
+          cp -R build/Build/Products/Release-iphoneos/Lume.app package/Payload/
+          cd package
+          zip -qry Lume-unsigned.ipa Payload
+      - name: Guardar artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lume-unsigned
+          path: package/Lume-unsigned.ipa
+          retention-days: 3
